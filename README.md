@@ -1,7 +1,7 @@
 # Civic Air Quality Briefing Studio
 
 [![Flutter](https://img.shields.io/badge/Flutter-3.47+-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
-[![Gemini](https://img.shields.io/badge/Model-Gemini%202.5%20Flash-4285F4?logo=google&logoColor=white)](https://aistudio.google.com)
+[![Gemini](https://img.shields.io/badge/Model-Gemini%203.8%20Flash-4285F4?logo=google&logoColor=white)](https://aistudio.google.com)
 [![Platform](https://img.shields.io/badge/Platform-Web%20%7C%20Android%20%7C%20iOS%20%7C%20Desktop-green)](#)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](#)
 
@@ -26,7 +26,7 @@ Built for municipal administrators, residential welfare associations, and educat
                                                   v
                      +--------------------------------------------------------+
                      |                 GeminiService (Dart SDK)               |
-                     |  - Model: gemini-2.5-flash                             |
+                     |  - Model: gemini-3.8-flash                             |
                      |  - GenerationConfig(responseMimeType: application/json)|
                      |  - responseSchema: civicAirBriefingSchema (Strict)     |
                      |  - System Instruction: Chief Civic Intelligence Officer|
@@ -57,8 +57,8 @@ Built for municipal administrators, residential welfare associations, and educat
 
 ## GenAI Services & Models Used
 
-- **Primary Generative Model:** `gemini-2.5-flash` via the official `google_generative_ai` Dart package (`v0.4.7`).
-- **Strict Structured Outputs:** The service registers a comprehensive `Schema.object` containing exact enums, nested object arrays, and required properties. This guarantees that `gemini-2.5-flash` delivers deterministically structured JSON that directly hydrates strongly typed Dart models (`CivicAirBriefing`) without parse exceptions or UI breakage.
+- **Primary Generative Model:** `gemini-3.8-flash` via the official `google_generative_ai` Dart package (`v0.4.7`).
+- **Strict Structured Outputs:** The service registers a comprehensive `Schema.object` containing exact enums, nested object arrays, and required properties. This guarantees that `gemini-3.8-flash` delivers deterministically structured JSON that directly hydrates strongly typed Dart models (`CivicAirBriefing`) without parse exceptions or UI breakage.
 - **Low-Temperature Determinism:** Configured with `temperature: 0.15` to ensure scientific consistency, unit conversion rigor, and strict adherence to raw telemetry line citations.
 - **Zero Hallucination Traceability:** Gemini is prompted to reject unreferenced assumptions; every identified hotspot must cite its exact row index, sensor ID, and observation timestamp.
 - **Dynamic Persona Conditioning:** System instructions configure Gemini as a municipal environmental scientist, aligning immediate action recommendations with the legal and operational jurisdiction of the selected role (`Ward Officer`, `Housing Society`, or `School`).
@@ -225,7 +225,7 @@ civic_air_studio/
 │   │   └── sample_data.dart                        # Realistic messy telemetry & previous brief
 │   ├── services/
 │   │   ├── api_key_storage.dart                    # Precedence storage & in-app override
-│   │   └── gemini_service.dart                     # Gemini 2.5 Flash caller with structured schema
+│   │   └── gemini_service.dart                     # Gemini 3.8 Flash caller with structured schema
 │   ├── widgets/
 │   │   ├── app_header.dart                         # Top App Bar with API Key modal
 │   │   ├── citizen_advisory_view.dart              # Tab 2: Multilingual citizen advisory
@@ -249,7 +249,7 @@ civic_air_studio/
 ---
 
 ## Evaluators' Quick Checklist
-- [x] **No Mocked Data:** Uses live Gemini 2.5 Flash endpoint calls.
+- [x] **No Mocked Data:** Uses live Gemini 3.8 Flash endpoint calls.
 - [x] **Strict Structured Output:** Zero JSON parse breaks via `responseMimeType: 'application/json'` and `responseSchema`.
 - [x] **Traceability:** Every finding cites row numbers, sensor IDs, and timestamps.
 - [x] **Messy Telemetry Ingestion:** Normalizes mixed units ($\mu\text{g/m}^3$ vs $\text{ppm}$) and flags `NaN` / dropouts.

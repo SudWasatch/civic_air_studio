@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// Top-level model representing the complete AI-generated briefing.
-/// Strict JSON schema guarantees every field is populated by Gemini 2.5 Flash.
+/// Strict JSON schema guarantees every field is populated by Gemini 3.8 Flash.
 class CivicAirBriefing {
   final String summary;
   final int overallAqiEstimate;

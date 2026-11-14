@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 
-/// Centralized API Key Management for Gemini 2.5 Flash.
+/// Centralized API Key Management for Gemini 3.8 Flash.
 ///
 /// Precedence Order:
 /// 1. In-app user override (entered via Top App Bar dialog for judges / testers)

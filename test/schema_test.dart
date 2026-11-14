@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 
 void main() {
-  test('Verify Gemini 2.5 Flash schema compatibility', () {
+  test('Verify Gemini 3.8 Flash schema compatibility', () {
     final schema = Schema.object(
       properties: {
         'summary': Schema.string(description: 'Summary'),

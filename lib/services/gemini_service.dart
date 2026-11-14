@@ -23,10 +23,11 @@ class AirQualityServiceException implements Exception {
   String toString() => userMessage;
 }
 
-/// Service handling live calls to Gemini 2.5 Flash with strict structured JSON schemas.
+/// Service handling live calls to Gemini 3.8 Flash with strict structured JSON schemas.
 class GeminiService {
   /// Model identifier explicitly required for the hackathon
-  static const String modelName = 'gemini-2.5-flash';
+  static const String modelName = 'gemini-3.8-flash';
+  // static const String modelName = 'gemini-3.8-flash';
 
   /// Exact strict response schema ensuring Gemini adheres 100% to the UI data model.
   static final Schema responseSchema = Schema.object(
@@ -301,7 +302,7 @@ class GeminiService {
     ],
   );
 
-  /// Generates the complete briefing by calling Gemini 2.5 Flash with strict JSON schema.
+  /// Generates the complete briefing by calling Gemini 3.8 Flash with strict JSON schema.
   Future<CivicAirBriefing> generateBriefing({
     required String rawData,
     required CivicRole role,

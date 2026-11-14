@@ -49,7 +49,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'This application calls live Gemini 2.5 Flash for data synthesis and civic intelligence. '
+                      'This application calls live Gemini 3.8 Flash for data synthesis and civic intelligence. '
                       'Hackathon evaluators can provide a key below or pass it via --dart-define=GEMINI_API_KEY=...',
                       style: TextStyle(fontSize: 13, height: 1.4, color: Color(0xFF455A64)),
                     ),
@@ -232,7 +232,7 @@ class AppHeader extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    'AI Intelligence Engine • Gemini 2.5 Flash',
+                    'AI Intelligence Engine • Gemini 3.8 Flash',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w500,

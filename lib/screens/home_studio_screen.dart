@@ -67,7 +67,7 @@ class _HomeStudioScreenState extends State<HomeStudioScreen> with SingleTickerPr
     });
   }
 
-  /// Calls Gemini 2.5 Flash to generate live briefing with strict JSON schema
+  /// Calls Gemini 3.8 Flash to generate live briefing with strict JSON schema
   Future<void> _generateBriefing() async {
     setState(() {
       _isLoading = true;
@@ -274,7 +274,7 @@ class _HomeStudioScreenState extends State<HomeStudioScreen> with SingleTickerPr
           ),
           const SizedBox(height: 16),
 
-          // Action Button: Generate Live Briefing with Gemini 2.5 Flash
+          // Action Button: Generate Live Briefing with Gemini 3.8 Flash
           FilledButton.icon(
             onPressed: _isLoading ? null : _generateBriefing,
             icon: _isLoading
@@ -285,7 +285,7 @@ class _HomeStudioScreenState extends State<HomeStudioScreen> with SingleTickerPr
                   )
                 : const Icon(Icons.auto_awesome_rounded, size: 20),
             label: Text(
-              _isLoading ? 'Analyzing Telemetry with Gemini 2.5 Flash...' : 'Generate Live Briefing',
+              _isLoading ? 'Analyzing Telemetry with Gemini 3.8 Flash...' : 'Generate Live Briefing',
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
             ),
             style: FilledButton.styleFrom(
@@ -321,7 +321,7 @@ class _HomeStudioScreenState extends State<HomeStudioScreen> with SingleTickerPr
             ),
             const SizedBox(height: 20),
             const Text(
-              'Gemini 2.5 Flash Synthesizing Telemetry...',
+              'Gemini 3.8 Flash Synthesizing Telemetry...',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -370,7 +370,7 @@ class _HomeStudioScreenState extends State<HomeStudioScreen> with SingleTickerPr
                 constraints: const BoxConstraints(maxWidth: 480),
                 child: Text(
                   'Paste sensor telemetry or click "Load Demo" on the left panel. '
-                  'Gemini 2.5 Flash will extract hotspots, audit uncalibrated dropouts, and create actionable plans.',
+                  'Gemini 3.8 Flash will extract hotspots, audit uncalibrated dropouts, and create actionable plans.',
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 13.5, color: theme.colorScheme.onSurfaceVariant, height: 1.4),
                 ),

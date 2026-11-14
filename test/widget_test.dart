@@ -16,7 +16,7 @@ void main() {
 
     // Verify Title and Engine Badge
     expect(find.text('Civic Air Quality Briefing Studio'), findsOneWidget);
-    expect(find.textContaining('Gemini 2.5 Flash'), findsWidgets);
+    expect(find.textContaining('Gemini 3.8 Flash'), findsWidgets);
 
     // Verify Ingestion section
     expect(find.text('1. Ingest Messy Sensor Telemetry'), findsOneWidget);

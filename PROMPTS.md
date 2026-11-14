@@ -1,7 +1,7 @@
-# Gemini 2.5 Flash Prompt & Structured Output Schema Specification
+# Gemini 3.8 Flash Prompt & Structured Output Schema Specification
 
 **Application:** Civic Air Quality Briefing Studio  
-**Model:** `gemini-2.5-flash`  
+**Model:** `gemini-3.8-flash`  
 **SDK:** `google_generative_ai` (Dart)  
 **MIME Type:** `application/json`  
 **Sampling Configuration:** `temperature: 0.15` (optimized for factual extraction, data cleansing, and strict citation fidelity)

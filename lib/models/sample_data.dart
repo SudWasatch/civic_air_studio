@@ -1,5 +1,5 @@
 /// Realistic messy air quality datasets and baseline previous briefing
-/// designed to demonstrate live Gemini 2.5 Flash data cleansing,
+/// designed to demonstrate live Gemini 3.8 Flash data cleansing,
 /// anomaly detection, citation tracking, and diffing.
 class SampleData {
   /// Realistic messy sensor data containing:
@@ -32,7 +32,7 @@ Timestamp, Sensor_ID, Station_Location, Pollutant_Type, Raw_Value, Reported_Unit
 ''';
 
   /// Realistic previous briefing generated 48 hours earlier for Ward 14.
-  /// Used by Gemini 2.5 Flash to compute diffing (improved vs worsened vs stable).
+  /// Used by Gemini 3.8 Flash to compute diffing (improved vs worsened vs stable).
   static const String previousBriefSample = '''
 PREVIOUS CIVIC BRIEFING (48 Hours Ago - Nov 12, 2026)
 Target Jurisdiction: Ward 14 & Environs

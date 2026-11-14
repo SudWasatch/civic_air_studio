@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/sample_data.dart';
 
 /// Optional input card allowing users to supply a previous briefing note.
-/// Enables Gemini 2.5 Flash to compute progress diffing (improved, worsened, or unchanged).
+/// Enables Gemini 3.8 Flash to compute progress diffing (improved, worsened, or unchanged).
 class DiffInputCard extends StatefulWidget {
   final TextEditingController controller;
   final VoidCallback onDataChanged;

@@ -7,7 +7,7 @@ void main() {
 }
 
 /// Root Application Widget for Civic Air Quality Briefing Studio.
-/// Multi-platform Flutter app powered by Gemini 2.5 Flash.
+/// Multi-platform Flutter app powered by Gemini 3.8 Flash.
 class CivicAirQualityStudioApp extends StatelessWidget {
   const CivicAirQualityStudioApp({super.key});
 
