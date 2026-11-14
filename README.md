@@ -112,7 +112,7 @@ Built for municipal administrators, residential welfare associations, and educat
 
 ### 1. Clone & Enter Project
 ```bash
-git clone https://github.com/your-username/civic_air_studio.git
+git clone https://github.com/SudWasatch/civic_air_studio.git
 cd civic_air_studio
 ```
 
