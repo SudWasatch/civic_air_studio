@@ -23,11 +23,20 @@ class AirQualityServiceException implements Exception {
   String toString() => userMessage;
 }
 
-/// Service handling live calls to Gemini 3.8 Flash with strict structured JSON schemas.
+/// Service handling live calls to Gemini 2.5 Flash with strict structured JSON schemas
+/// and an efficient in-memory LRU response cache to prevent redundant API calls.
 class GeminiService {
   /// Model identifier explicitly required for the hackathon
-  static const String modelName = 'gemini-3.8-flash';
-  // static const String modelName = 'gemini-3.8-flash';
+  static const String modelName = 'gemini-2.5-flash';
+
+  /// Maximum permissible input characters to prevent payload exhaustion or abuse
+  static const int maxInputChars = 20000;
+
+  /// Maximum entries preserved in the in-memory LRU cache
+  static const int maxCacheEntries = 25;
+
+  /// In-memory LRU cache storing prior responses keyed by deterministic input hash
+  final Map<String, CivicAirBriefing> _responseCache = <String, CivicAirBriefing>{};
 
   /// Exact strict response schema ensuring Gemini adheres 100% to the UI data model.
   static final Schema responseSchema = Schema.object(
@@ -302,22 +311,109 @@ class GeminiService {
     ],
   );
 
-  /// Generates the complete briefing by calling Gemini 3.8 Flash with strict JSON schema.
+  /// Computes a deterministic cache key for in-memory deduplication.
+  String computeCacheKey({
+    required String rawData,
+    required CivicRole role,
+    required AdvisoryLanguage language,
+    required ReadingLevel readingLevel,
+    String? previousBrief,
+  }) {
+    final cleanRaw = rawData.trim();
+    final cleanPrev = (previousBrief ?? '').trim();
+    return '$cleanRaw||${role.name}||${language.name}||${readingLevel.name}||$cleanPrev';
+  }
+
+  /// Clears the in-memory response cache.
+  void clearCache() {
+    _responseCache.clear();
+  }
+
+  /// Number of entries currently stored in the in-memory response cache.
+  int get cachedItemCount => _responseCache.length;
+
+  /// Checks if a request result is already cached without issuing network requests.
+  bool hasCachedResponse({
+    required String rawData,
+    required CivicRole role,
+    required AdvisoryLanguage language,
+    required ReadingLevel readingLevel,
+    String? previousBrief,
+  }) {
+    final key = computeCacheKey(
+      rawData: rawData,
+      role: role,
+      language: language,
+      readingLevel: readingLevel,
+      previousBrief: previousBrief,
+    );
+    return _responseCache.containsKey(key);
+  }
+
+  /// Stores a briefing in the cache directly (useful for testing or manual seeding).
+  void putInCache({
+    required String rawData,
+    required CivicRole role,
+    required AdvisoryLanguage language,
+    required ReadingLevel readingLevel,
+    String? previousBrief,
+    required CivicAirBriefing briefing,
+  }) {
+    final key = computeCacheKey(
+      rawData: rawData,
+      role: role,
+      language: language,
+      readingLevel: readingLevel,
+      previousBrief: previousBrief,
+    );
+    if (_responseCache.length >= maxCacheEntries) {
+      _responseCache.remove(_responseCache.keys.first);
+    }
+    _responseCache[key] = briefing;
+  }
+
+  /// Generates the complete briefing by calling Gemini 2.5 Flash with strict JSON schema.
+  /// Deduplicates calls via LRU cache when identical parameters are requested.
   Future<CivicAirBriefing> generateBriefing({
     required String rawData,
     required CivicRole role,
     required AdvisoryLanguage language,
     required ReadingLevel readingLevel,
     String? previousBrief,
+    bool bypassCache = false,
   }) async {
-    // Edge Case: Check for empty input
+    // Edge Case 1: Check for empty input
     if (rawData.trim().isEmpty) {
       throw const AirQualityServiceException(
         userMessage: 'Please provide raw sensor data or click "Load Sample Messy Data" before generating.',
       );
     }
 
-    // Edge Case: Validate API Key availability
+    // Edge Case 2: Security input guardrail check (prevent oversized payload)
+    if (rawData.length > maxInputChars) {
+      throw const AirQualityServiceException(
+        userMessage:
+            'The input telemetry exceeds the safe limit of 20,000 characters. Please truncate or filter records.',
+      );
+    }
+
+    // Efficiency: Check in-memory LRU cache
+    final cacheKey = computeCacheKey(
+      rawData: rawData,
+      role: role,
+      language: language,
+      readingLevel: readingLevel,
+      previousBrief: previousBrief,
+    );
+
+    if (!bypassCache && _responseCache.containsKey(cacheKey)) {
+      // Re-insert to refresh LRU recency
+      final cachedItem = _responseCache.remove(cacheKey)!;
+      _responseCache[cacheKey] = cachedItem;
+      return cachedItem;
+    }
+
+    // Edge Case 3: Validate API Key availability
     final apiKey = ApiKeyStorage.instance.activeKey;
     if (apiKey.isEmpty) {
       throw const AirQualityServiceException(
@@ -369,7 +465,15 @@ class GeminiService {
         );
       }
 
-      return CivicAirBriefing.fromJson(jsonMap);
+      final briefing = CivicAirBriefing.fromJson(jsonMap);
+
+      // Cache newly computed response
+      if (_responseCache.length >= maxCacheEntries) {
+        _responseCache.remove(_responseCache.keys.first);
+      }
+      _responseCache[cacheKey] = briefing;
+
+      return briefing;
     } on AirQualityServiceException {
       rethrow;
     } on SocketException catch (e) {

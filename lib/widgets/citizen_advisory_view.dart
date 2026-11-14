@@ -7,6 +7,7 @@ import 'metric_badge.dart';
 /// Translated into user's chosen language (English, Hindi, Spanish, Regional Simple)
 /// and calibrated to reading level (Simple/General vs Detailed),
 /// with dedicated precautions for children, older adults, and sensitive groups.
+/// Enhanced with WCAG 2.1 AA accessibility semantics.
 class CitizenAdvisoryView extends StatelessWidget {
   final CivicAirBriefing briefing;
 
@@ -82,35 +83,49 @@ class CitizenAdvisoryView extends StatelessWidget {
                         isFilled: false,
                       ),
                       const Spacer(),
-                      ElevatedButton.icon(
-                        icon: const Icon(Icons.copy_rounded, size: 16),
-                        label: const Text('Copy Advisory'),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xFF004D40),
-                          visualDensity: VisualDensity.compact,
+                      Semantics(
+                        button: true,
+                        label: 'Copy entire citizen advisory text to clipboard',
+                        child: Tooltip(
+                          message: 'Copy advisory text to clipboard for SMS/WhatsApp distribution',
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.copy_rounded, size: 16),
+                            label: const Text('Copy Advisory'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              foregroundColor: const Color(0xFF004D40),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                            onPressed: () => _copyToClipboard(context),
+                          ),
                         ),
-                        onPressed: () => _copyToClipboard(context),
                       ),
                     ],
                   ),
                   const SizedBox(height: 14),
-                  Text(
-                    advisory.headline,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      height: 1.25,
+                  Semantics(
+                    header: true,
+                    label: 'Citizen Advisory Headline: ${advisory.headline}',
+                    child: Text(
+                      advisory.headline,
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: Colors.white,
+                        height: 1.25,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 10),
-                  Text(
-                    advisory.plainLanguageAdvisory,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.white.withValues(alpha: 0.95),
-                      height: 1.45,
+                  Semantics(
+                    label: 'Citizen Advisory Body: ${advisory.plainLanguageAdvisory}',
+                    child: Text(
+                      advisory.plainLanguageAdvisory,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.white.withValues(alpha: 0.95),
+                        height: 1.45,
+                      ),
                     ),
                   ),
                 ],
@@ -152,9 +167,15 @@ class CitizenAdvisoryView extends StatelessWidget {
               children: [
                 const Icon(Icons.health_and_safety_rounded, color: Color(0xFFD84315), size: 22),
                 const SizedBox(width: 8),
-                Text(
-                  'Dedicated Precautions for Sensitive Groups',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    label: 'Dedicated Precautions for Sensitive Groups Section',
+                    child: Text(
+                      'Dedicated Precautions for Sensitive Groups',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -206,46 +227,50 @@ class CitizenAdvisoryView extends StatelessWidget {
     required String content,
     required ThemeData theme,
   }) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withValues(alpha: 0.2)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              shape: BoxShape.circle,
+    return Semantics(
+      container: true,
+      label: 'Precaution for $title: $content',
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withValues(alpha: 0.2)),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 20),
             ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: color,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  content,
-                  style: const TextStyle(fontSize: 12.5, height: 1.35),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    content,
+                    style: const TextStyle(fontSize: 12.5, height: 1.35),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -267,9 +292,15 @@ class CitizenAdvisoryView extends StatelessWidget {
               children: [
                 const Icon(Icons.checklist_rounded, color: Color(0xFF2E7D32), size: 22),
                 const SizedBox(width: 8),
-                Text(
-                  'Community Actions: Do\'s and Don\'ts',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    label: 'Community Actions Dos and Donts Section',
+                    child: Text(
+                      'Community Actions: Do\'s and Don\'ts',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -293,12 +324,14 @@ class CitizenAdvisoryView extends StatelessWidget {
                           children: [
                             Icon(Icons.check_circle_outline, color: Color(0xFF2E7D32), size: 18),
                             SizedBox(width: 6),
-                            Text(
-                              'RECOMMENDED (DO)',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1B5E20),
+                            Flexible(
+                              child: Text(
+                                'RECOMMENDED (DO)',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF1B5E20),
+                                ),
                               ),
                             ),
                           ],
@@ -307,17 +340,20 @@ class CitizenAdvisoryView extends StatelessWidget {
                         ...dosAndDonts.dos.map(
                           (item) => Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('• ', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
-                                Expanded(
-                                  child: Text(
-                                    item,
-                                    style: const TextStyle(fontSize: 12, color: Color(0xFF1B5E20), height: 1.3),
+                            child: Semantics(
+                              label: 'Recommended action: $item',
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('✓ ', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF2E7D32))),
+                                  Expanded(
+                                    child: Text(
+                                      item,
+                                      style: const TextStyle(fontSize: 12, color: Color(0xFF1B5E20), height: 1.3),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -342,12 +378,14 @@ class CitizenAdvisoryView extends StatelessWidget {
                           children: [
                             Icon(Icons.cancel_outlined, color: Color(0xFFC62828), size: 18),
                             SizedBox(width: 6),
-                            Text(
-                              'AVOID STRICTLY (DON\'T)',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFFB71C1C),
+                            Flexible(
+                              child: Text(
+                                'AVOID STRICTLY (DON\'T)',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFFB71C1C),
+                                ),
                               ),
                             ),
                           ],
@@ -356,17 +394,20 @@ class CitizenAdvisoryView extends StatelessWidget {
                         ...dosAndDonts.donts.map(
                           (item) => Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('• ', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFC62828))),
-                                Expanded(
-                                  child: Text(
-                                    item,
-                                    style: const TextStyle(fontSize: 12, color: Color(0xFFB71C1C), height: 1.3),
+                            child: Semantics(
+                              label: 'Avoid action: $item',
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text('✗ ', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFFC62828))),
+                                  Expanded(
+                                    child: Text(
+                                      item,
+                                      style: const TextStyle(fontSize: 12, color: Color(0xFFB71C1C), height: 1.3),
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -384,43 +425,51 @@ class CitizenAdvisoryView extends StatelessWidget {
 
   /// Builds emergency medical guidance and red flag alert box
   Widget _buildEmergencyGuidanceCard(ThemeData theme, String guidance) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: const Color(0xFFFFF8E1), // Warm amber tint
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFFFE082), width: 1.2),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Icon(Icons.medical_information_rounded, color: Color(0xFFF57F17), size: 24),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Medical Alert & Symptom Warning',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFFE65100),
+    return Semantics(
+      container: true,
+      label: 'Medical Alert and Symptom Warning: $guidance',
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFF8E1), // Warm amber tint
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(color: const Color(0xFFFFE082), width: 1.2),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Icon(Icons.medical_information_rounded, color: Color(0xFFF57F17), size: 24),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Semantics(
+                    header: true,
+                    label: 'Medical Alert and Symptom Warning Heading',
+                    child: const Text(
+                      'Medical Alert & Symptom Warning',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFE65100),
+                      ),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  guidance,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Color(0xFF5D4037),
-                    height: 1.35,
+                  const SizedBox(height: 4),
+                  Text(
+                    guidance,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: Color(0xFF5D4037),
+                      height: 1.35,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

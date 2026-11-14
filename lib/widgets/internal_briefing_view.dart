@@ -5,6 +5,7 @@ import 'metric_badge.dart';
 /// Tab 1: Internal Operational Briefing Note for municipal authorities and site administrators.
 /// Includes technical telemetry analysis, rigorous citations, data quality audit,
 /// role-tailored action matrices, and diffing against past briefs.
+/// Complete with WCAG 2.1 AA accessibility semantics.
 class InternalBriefingView extends StatelessWidget {
   final CivicAirBriefing briefing;
 
@@ -63,33 +64,37 @@ class InternalBriefingView extends StatelessWidget {
             Row(
               children: [
                 // Prominent AQI Badge
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: briefing.riskColor,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    children: [
-                      const Text(
-                        'ESTIMATED AQI',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white70,
-                          letterSpacing: 0.5,
+                Semantics(
+                  container: true,
+                  label: 'Estimated AQI is ${briefing.overallAqiEstimate}, Health Risk Category is ${briefing.overallRiskLevel}',
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: briefing.riskColor,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      children: [
+                        const Text(
+                          'ESTIMATED AQI',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white70,
+                            letterSpacing: 0.5,
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${briefing.overallAqiEstimate}',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                          height: 1.1,
+                        Text(
+                          '${briefing.overallAqiEstimate}',
+                          style: const TextStyle(
+                            fontSize: 32,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            height: 1.1,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -97,14 +102,15 @@ class InternalBriefingView extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 6,
                         children: [
                           MetricBadge(
                             label: briefing.overallRiskLevel,
                             color: briefing.riskColor,
                             isFilled: false,
                           ),
-                          const SizedBox(width: 8),
                           MetricBadge(
                             label: 'Confidence ${(briefing.confidenceScore * 100).toStringAsFixed(0)}%',
                             color: const Color(0xFF00796B),
@@ -113,9 +119,13 @@ class InternalBriefingView extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 6),
-                      Text(
-                        'Operational Overview',
-                        style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                      Semantics(
+                        header: true,
+                        label: 'Operational Overview Section',
+                        child: Text(
+                          'Operational Overview',
+                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ],
                   ),
@@ -123,17 +133,20 @@ class InternalBriefingView extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: SelectableText(
-                briefing.summary,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  height: 1.45,
-                  color: theme.colorScheme.onSurface,
+            Semantics(
+              label: 'Executive Summary: ${briefing.summary}',
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: SelectableText(
+                  briefing.summary,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    height: 1.45,
+                    color: theme.colorScheme.onSurface,
+                  ),
                 ),
               ),
             ),
@@ -160,11 +173,16 @@ class InternalBriefingView extends StatelessWidget {
               children: [
                 const Icon(Icons.pin_drop_rounded, color: Color(0xFFC62828), size: 22),
                 const SizedBox(width: 8),
-                Text(
-                  'Identified Pollution Hotspots & Traceability',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    label: 'Identified Pollution Hotspots and Traceability Section, ${briefing.hotspots.length} detected',
+                    child: Text(
+                      'Identified Pollution Hotspots & Traceability',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
-                const Spacer(),
                 MetricBadge(
                   label: '${briefing.hotspots.length} Detected',
                   color: const Color(0xFFC62828),
@@ -190,74 +208,78 @@ class InternalBriefingView extends StatelessWidget {
                 separatorBuilder: (_, _) => const Divider(height: 16),
                 itemBuilder: (context, index) {
                   final item = briefing.hotspots[index];
-                  return Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: item.severityColor.withValues(alpha: 0.04),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: item.severityColor.withValues(alpha: 0.2)),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            MetricBadge(
-                              label: item.severity.toUpperCase(),
-                              color: item.severityColor,
-                              isFilled: true,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                item.locationOrSensor,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  return Semantics(
+                    container: true,
+                    label: 'Hotspot at ${item.locationOrSensor}, peak ${item.peakPollutant} value ${item.peakValue}, severity ${item.severity}, cited at ${item.citationRef}',
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: item.severityColor.withValues(alpha: 0.04),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: item.severityColor.withValues(alpha: 0.2)),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              MetricBadge(
+                                label: item.severity.toUpperCase(),
+                                color: item.severityColor,
+                                isFilled: true,
                               ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: Colors.blueGrey.shade100,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                '${item.peakPollutant}: ${item.peakValue}',
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                  color: Color(0xFF263238),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  item.locationOrSensor,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 6),
-                        Row(
-                          children: [
-                            const Icon(Icons.link_rounded, size: 14, color: Color(0xFF1565C0)),
-                            const SizedBox(width: 4),
-                            Expanded(
-                              child: Text(
-                                'Citation: ${item.citationRef} (${item.timestampOrPeriod})',
-                                style: const TextStyle(
-                                  fontSize: 11.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF1565C0),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                                decoration: BoxDecoration(
+                                  color: Colors.blueGrey.shade100,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  '${item.peakPollutant}: ${item.peakValue}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    color: Color(0xFF263238),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Contributing Factor: ${item.contributingFactors}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontStyle: FontStyle.italic,
+                            ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              const Icon(Icons.link_rounded, size: 14, color: Color(0xFF1565C0)),
+                              const SizedBox(width: 4),
+                              Expanded(
+                                child: Text(
+                                  'Citation: ${item.citationRef} (${item.timestampOrPeriod})',
+                                  style: const TextStyle(
+                                    fontSize: 11.5,
+                                    fontWeight: FontWeight.w600,
+                                    color: Color(0xFF1565C0),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Contributing Factor: ${item.contributingFactors}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   );
                 },
@@ -287,11 +309,16 @@ class InternalBriefingView extends StatelessWidget {
               children: [
                 const Icon(Icons.sanitizer_rounded, color: Color(0xFF00796B), size: 22),
                 const SizedBox(width: 8),
-                Text(
-                  'Data Quality & Sensor Health Audit',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    label: 'Data Quality and Sensor Health Audit Section',
+                    child: Text(
+                      'Data Quality & Sensor Health Audit',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
-                const Spacer(),
                 MetricBadge(
                   label: '${audit.totalRecordsAnalyzed} Points Parsed',
                   color: const Color(0xFF00796B),
@@ -309,41 +336,47 @@ class InternalBriefingView extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE0F2F1),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Valid Points', style: TextStyle(fontSize: 11, color: Color(0xFF004D40))),
-                        Text(
-                          '${audit.totalRecordsAnalyzed - audit.unreliableOrMissingPoints}',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF004D40)),
-                        ),
-                      ],
+                  child: Semantics(
+                    label: 'Valid Data Points: ${audit.totalRecordsAnalyzed - audit.unreliableOrMissingPoints}',
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFE0F2F1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Valid Points', style: TextStyle(fontSize: 11, color: Color(0xFF004D40))),
+                          Text(
+                            '${audit.totalRecordsAnalyzed - audit.unreliableOrMissingPoints}',
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFF004D40)),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFEBEE),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text('Corrupt / Missing Values', style: TextStyle(fontSize: 11, color: Color(0xFFC62828))),
-                        Text(
-                          '${audit.unreliableOrMissingPoints}',
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFC62828)),
-                        ),
-                      ],
+                  child: Semantics(
+                    label: 'Corrupt or Missing Readings: ${audit.unreliableOrMissingPoints}',
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFEBEE),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Corrupt / Missing Values', style: TextStyle(fontSize: 11, color: Color(0xFFC62828))),
+                          Text(
+                            '${audit.unreliableOrMissingPoints}',
+                            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFC62828)),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
@@ -353,9 +386,13 @@ class InternalBriefingView extends StatelessWidget {
 
             // Unit Conversions Applied
             if (audit.unitConversionsApplied.isNotEmpty) ...[
-              Text(
-                'Unit Normalizations Applied:',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+              Semantics(
+                header: true,
+                label: 'Unit Normalizations Applied List',
+                child: Text(
+                  'Unit Normalizations Applied:',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+                ),
               ),
               const SizedBox(height: 6),
               Wrap(
@@ -375,9 +412,13 @@ class InternalBriefingView extends StatelessWidget {
 
             // Flagged Anomalies Table
             if (audit.flaggedAnomalies.isNotEmpty) ...[
-              Text(
-                'Flagged Sensor Anomalies & Gaps:',
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+              Semantics(
+                header: true,
+                label: 'Flagged Sensor Anomalies and Gaps List',
+                child: Text(
+                  'Flagged Sensor Anomalies & Gaps:',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: theme.colorScheme.onSurface),
+                ),
               ),
               const SizedBox(height: 8),
               Container(
@@ -392,14 +433,18 @@ class InternalBriefingView extends StatelessWidget {
                   separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final anomaly = audit.flaggedAnomalies[index];
-                    return ListTile(
-                      dense: true,
-                      leading: const Icon(Icons.warning_amber_rounded, color: Color(0xFFE65100), size: 20),
-                      title: Text(
-                        '${anomaly.sensorOrRow}: ${anomaly.issueType}',
-                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    return Semantics(
+                      container: true,
+                      label: 'Anomaly on ${anomaly.sensorOrRow}: ${anomaly.issueType}. Details: ${anomaly.details}',
+                      child: ListTile(
+                        dense: true,
+                        leading: const Icon(Icons.warning_amber_rounded, color: Color(0xFFE65100), size: 20),
+                        title: Text(
+                          '${anomaly.sensorOrRow}: ${anomaly.issueType}',
+                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        ),
+                        subtitle: Text(anomaly.details, style: const TextStyle(fontSize: 11.5)),
                       ),
-                      subtitle: Text(anomaly.details, style: const TextStyle(fontSize: 11.5)),
                     );
                   },
                 ),
@@ -430,9 +475,15 @@ class InternalBriefingView extends StatelessWidget {
               children: [
                 const Icon(Icons.assignment_turned_in_rounded, color: Color(0xFF1565C0), size: 22),
                 const SizedBox(width: 8),
-                Text(
-                  'Role-Specific Action Plan: ${plan.targetRole}',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    label: 'Role Specific Action Plan Section for ${plan.targetRole}',
+                    child: Text(
+                      'Role-Specific Action Plan: ${plan.targetRole}',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -444,12 +495,16 @@ class InternalBriefingView extends StatelessWidget {
             const SizedBox(height: 14),
 
             // Immediate Actions (0-4 hrs)
-            Text(
-              'Immediate Interventions (Next 0 - 4 Hours)',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                color: Colors.red.shade900,
+            Semantics(
+              header: true,
+              label: 'Immediate Interventions for Next 0 to 4 Hours',
+              child: Text(
+                'Immediate Interventions (Next 0 - 4 Hours)',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red.shade900,
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -457,12 +512,16 @@ class InternalBriefingView extends StatelessWidget {
 
             const SizedBox(height: 14),
             // Medium-Term Interventions (24-72 hrs)
-            Text(
-              'Medium-Term Interventions (24 - 72 Hours)',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue.shade900,
+            Semantics(
+              header: true,
+              label: 'Medium-Term Interventions for 24 to 72 Hours',
+              child: Text(
+                'Medium-Term Interventions (24 - 72 Hours)',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue.shade900,
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -471,12 +530,16 @@ class InternalBriefingView extends StatelessWidget {
             // Resource Checklist
             if (plan.resourceChecklist.isNotEmpty) ...[
               const SizedBox(height: 14),
-              Text(
-                'Required Assets & Resource Checklist',
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
+              Semantics(
+                header: true,
+                label: 'Required Assets and Resource Checklist',
+                child: Text(
+                  'Required Assets & Resource Checklist',
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -489,20 +552,23 @@ class InternalBriefingView extends StatelessWidget {
                 ),
                 child: Column(
                   children: plan.resourceChecklist.map((item) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 3),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Icon(Icons.check_box_outlined, size: 16, color: Color(0xFF33691E)),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              item,
-                              style: const TextStyle(fontSize: 12, color: Color(0xFF1B5E20)),
+                    return Semantics(
+                      label: 'Checklist Item: $item',
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 3),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Icon(Icons.check_box_outlined, size: 16, color: Color(0xFF33691E)),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                item,
+                                style: const TextStyle(fontSize: 12, color: Color(0xFF1B5E20)),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     );
                   }).toList(),
@@ -516,58 +582,62 @@ class InternalBriefingView extends StatelessWidget {
   }
 
   Widget _buildActionItem(RoleActionItem action, ThemeData theme) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              MetricBadge(
-                label: action.priority.toUpperCase(),
-                color: action.priorityColor,
-                isFilled: true,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  action.title,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          Text(
-            action.description,
-            style: const TextStyle(fontSize: 12.5, height: 1.35),
-          ),
-          if (action.expectedImpact.isNotEmpty) ...[
-            const SizedBox(height: 6),
+    return Semantics(
+      container: true,
+      label: 'Action: ${action.title}, Priority ${action.priority}. ${action.description}. Expected Impact: ${action.expectedImpact}',
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             Row(
               children: [
-                const Icon(Icons.energy_savings_leaf_outlined, size: 14, color: Color(0xFF2E7D32)),
-                const SizedBox(width: 4),
+                MetricBadge(
+                  label: action.priority.toUpperCase(),
+                  color: action.priorityColor,
+                  isFilled: true,
+                ),
+                const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'Expected Impact: ${action.expectedImpact}',
-                    style: const TextStyle(
-                      fontSize: 11.5,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF2E7D32),
-                    ),
+                    action.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13.5),
                   ),
                 ),
               ],
             ),
+            const SizedBox(height: 6),
+            Text(
+              action.description,
+              style: const TextStyle(fontSize: 12.5, height: 1.35),
+            ),
+            if (action.expectedImpact.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  const Icon(Icons.energy_savings_leaf_outlined, size: 14, color: Color(0xFF2E7D32)),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: Text(
+                      'Expected Impact: ${action.expectedImpact}',
+                      style: const TextStyle(
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w600,
+                        color: Color(0xFF2E7D32),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -591,11 +661,16 @@ class InternalBriefingView extends StatelessWidget {
               children: [
                 const Icon(Icons.compare_arrows_rounded, color: Color(0xFF6A1B9A), size: 22),
                 const SizedBox(width: 8),
-                Text(
-                  'Progress Comparison & Historical Diff',
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    label: 'Progress Comparison and Historical Diff Section, Overall trend: ${comp.overallTrend}',
+                    child: Text(
+                      'Progress Comparison & Historical Diff',
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
                 ),
-                const Spacer(),
                 MetricBadge(
                   label: comp.overallTrend,
                   color: comp.trendColor,
@@ -604,12 +679,15 @@ class InternalBriefingView extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
-            Text(
-              comp.comparisonSummary,
-              style: TextStyle(
-                fontSize: 12.5,
-                color: theme.colorScheme.onSurface,
-                height: 1.35,
+            Semantics(
+              label: 'Comparison Summary: ${comp.comparisonSummary}',
+              child: Text(
+                comp.comparisonSummary,
+                style: TextStyle(
+                  fontSize: 12.5,
+                  color: theme.colorScheme.onSurface,
+                  height: 1.35,
+                ),
               ),
             ),
             const SizedBox(height: 12),
@@ -623,39 +701,43 @@ class InternalBriefingView extends StatelessWidget {
                 separatorBuilder: (_, _) => const SizedBox(height: 6),
                 itemBuilder: (context, index) {
                   final change = comp.changes[index];
-                  return Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: change.statusColor.withValues(alpha: 0.05),
-                      borderRadius: BorderRadius.circular(6),
-                      border: Border.all(color: change.statusColor.withValues(alpha: 0.2)),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Icon(change.statusIcon, size: 18, color: change.statusColor),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                '${change.metricOrArea} • ${change.status}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                  color: change.statusColor,
+                  return Semantics(
+                    container: true,
+                    label: 'Change in ${change.metricOrArea}: ${change.status}. Details: ${change.details}',
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: change.statusColor.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(6),
+                        border: Border.all(color: change.statusColor.withValues(alpha: 0.2)),
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(change.statusIcon, size: 18, color: change.statusColor),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '${change.metricOrArea} • ${change.status}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                    color: change.statusColor,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                change.details,
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                            ],
+                                const SizedBox(height: 2),
+                                Text(
+                                  change.details,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },

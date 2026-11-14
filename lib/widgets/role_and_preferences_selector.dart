@@ -6,6 +6,8 @@ import '../models/language_reading_level.dart';
 /// 1. Target Civic Role (Ward Officer, Housing Society, or School)
 /// 2. Citizen Advisory Translation Language (English, Hindi, Spanish, Regional Simple)
 /// 3. Citizen Advisory Reading Level (Simple/General vs Detailed)
+///
+/// Features explicit accessibility semantics and responsive form controls.
 class RoleAndPreferencesSelector extends StatelessWidget {
   final CivicRole selectedRole;
   final ValueChanged<CivicRole> onRoleChanged;
@@ -56,23 +58,27 @@ class RoleAndPreferencesSelector extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '2. Target Role & Advisory Preferences',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.2,
+                Expanded(
+                  child: Semantics(
+                    header: true,
+                    label: 'Section 2: Target Role & Advisory Preferences',
+                    child: const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '2. Target Role & Advisory Preferences',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: -0.2,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'AI tailors interventions strictly to what the chosen role can execute.',
-                        style: TextStyle(fontSize: 12, color: Color(0xFF607D8B)),
-                      ),
-                    ],
+                        Text(
+                          'AI tailors interventions strictly to what the chosen role can execute.',
+                          style: TextStyle(fontSize: 12, color: Color(0xFF607D8B)),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -80,12 +86,16 @@ class RoleAndPreferencesSelector extends StatelessWidget {
             const SizedBox(height: 14),
 
             // Civic Role Selector
-            Text(
-              'Select Target Civic Authority:',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
+            Semantics(
+              header: true,
+              label: 'Select Target Civic Authority Role',
+              child: Text(
+                'Select Target Civic Authority:',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
             ),
             const SizedBox(height: 8),
@@ -94,120 +104,142 @@ class RoleAndPreferencesSelector extends StatelessWidget {
               runSpacing: 8,
               children: CivicRole.values.map((role) {
                 final isSelected = role == selectedRole;
-                return ChoiceChip(
-                  avatar: Icon(
-                    role.icon,
-                    size: 16,
-                    color: isSelected ? Colors.white : const Color(0xFF004D40),
-                  ),
-                  label: Text(role.shortName),
+                return Semantics(
+                  button: true,
                   selected: isSelected,
-                  selectedColor: const Color(0xFF00796B),
-                  labelStyle: TextStyle(
-                    fontSize: 13,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
-                    color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+                  label: '${role.displayName}, ${isSelected ? 'Selected' : 'Not selected'}',
+                  child: Tooltip(
+                    message: role.description,
+                    child: ChoiceChip(
+                      avatar: Icon(
+                        role.icon,
+                        size: 16,
+                        color: isSelected ? Colors.white : const Color(0xFF004D40),
+                      ),
+                      label: Text(role.shortName),
+                      selected: isSelected,
+                      selectedColor: const Color(0xFF00796B),
+                      labelStyle: TextStyle(
+                        fontSize: 13,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                        color: isSelected ? Colors.white : theme.colorScheme.onSurface,
+                      ),
+                      onSelected: (selected) {
+                        if (selected) onRoleChanged(role);
+                      },
+                    ),
                   ),
-                  onSelected: (selected) {
-                    if (selected) onRoleChanged(role);
-                  },
                 );
               }).toList(),
             ),
             const SizedBox(height: 10),
 
             // Contextual banner displaying the selected role's authority and powers
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                color: const Color(0xFFE0F2F1),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: const Color(0xFFB2DFDB)),
-              ),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Icon(Icons.verified_user_outlined, size: 16, color: Color(0xFF00695C)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        style: const TextStyle(fontSize: 11.5, color: Color(0xFF004D40), height: 1.3),
-                        children: [
-                          TextSpan(
-                            text: '${selectedRole.displayName}: ',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                          TextSpan(text: selectedRole.description),
-                        ],
+            Semantics(
+              container: true,
+              label: 'Selected Authority Scope: ${selectedRole.displayName}. ${selectedRole.description}',
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFE0F2F1),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: const Color(0xFFB2DFDB)),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Icons.verified_user_outlined, size: 16, color: Color(0xFF00695C)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(
+                          style: const TextStyle(fontSize: 11.5, color: Color(0xFF004D40), height: 1.3),
+                          children: [
+                            TextSpan(
+                              text: '${selectedRole.displayName}: ',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(text: selectedRole.description),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             const Divider(height: 28),
 
             // Citizen Advisory Controls
-            Text(
-              'Citizen Advisory Settings (Public-Facing):',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
+            Semantics(
+              header: true,
+              label: 'Citizen Advisory Settings Section',
+              child: Text(
+                'Citizen Advisory Settings (Public-Facing):',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
             ),
             const SizedBox(height: 10),
             Column(
               children: [
-                DropdownButtonFormField<AdvisoryLanguage>(
-                  initialValue: selectedLanguage,
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    labelText: 'Advisory Language',
-                    prefixIcon: const Icon(Icons.translate_rounded, size: 18),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    isDense: true,
+                Semantics(
+                  label: 'Select Advisory Translation Language',
+                  child: DropdownButtonFormField<AdvisoryLanguage>(
+                    initialValue: selectedLanguage,
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      labelText: 'Advisory Language',
+                      prefixIcon: const Icon(Icons.translate_rounded, size: 18),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      isDense: true,
+                    ),
+                    items: AdvisoryLanguage.values.map((lang) {
+                      return DropdownMenuItem<AdvisoryLanguage>(
+                        value: lang,
+                        child: Text(
+                          '${lang.displayName} (${lang.nativeLabel})',
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (lang) {
+                      if (lang != null) onLanguageChanged(lang);
+                    },
                   ),
-                  items: AdvisoryLanguage.values.map((lang) {
-                    return DropdownMenuItem<AdvisoryLanguage>(
-                      value: lang,
-                      child: Text(
-                        '${lang.displayName} (${lang.nativeLabel})',
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (lang) {
-                    if (lang != null) onLanguageChanged(lang);
-                  },
                 ),
                 const SizedBox(height: 12),
-                DropdownButtonFormField<ReadingLevel>(
-                  initialValue: selectedReadingLevel,
-                  isExpanded: true,
-                  decoration: InputDecoration(
-                    labelText: 'Reading Level',
-                    prefixIcon: const Icon(Icons.auto_stories_rounded, size: 18),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    isDense: true,
+                Semantics(
+                  label: 'Select Advisory Reading Level',
+                  child: DropdownButtonFormField<ReadingLevel>(
+                    initialValue: selectedReadingLevel,
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      labelText: 'Reading Level',
+                      prefixIcon: const Icon(Icons.auto_stories_rounded, size: 18),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      isDense: true,
+                    ),
+                    items: ReadingLevel.values.map((lvl) {
+                      return DropdownMenuItem<ReadingLevel>(
+                        value: lvl,
+                        child: Text(
+                          lvl.displayName,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (lvl) {
+                      if (lvl != null) onReadingLevelChanged(lvl);
+                    },
                   ),
-                  items: ReadingLevel.values.map((lvl) {
-                    return DropdownMenuItem<ReadingLevel>(
-                      value: lvl,
-                      child: Text(
-                        lvl.displayName,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                    );
-                  }).toList(),
-                  onChanged: (lvl) {
-                    if (lvl != null) onReadingLevelChanged(lvl);
-                  },
                 ),
               ],
             ),

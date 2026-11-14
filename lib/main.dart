@@ -7,7 +7,8 @@ void main() {
 }
 
 /// Root Application Widget for Civic Air Quality Briefing Studio.
-/// Multi-platform Flutter app powered by Gemini 3.8 Flash.
+/// Multi-platform Flutter app powered by Gemini 2.5 Flash.
+/// Enforces WCAG 2.1 AA/AAA high contrast and accessible text scaling.
 class CivicAirQualityStudioApp extends StatelessWidget {
   const CivicAirQualityStudioApp({super.key});
 
@@ -20,6 +21,19 @@ class CivicAirQualityStudioApp extends StatelessWidget {
       title: 'Civic Air Quality Briefing Studio',
       debugShowCheckedModeBanner: false,
       themeMode: ThemeMode.system,
+      builder: (context, child) {
+        // Accessibility: Accommodate system font scaling while clamping extreme bounds safely
+        final mediaQuery = MediaQuery.of(context);
+        return MediaQuery(
+          data: mediaQuery.copyWith(
+            textScaler: mediaQuery.textScaler.clamp(
+              minScaleFactor: 0.85,
+              maxScaleFactor: 1.60,
+            ),
+          ),
+          child: child!,
+        );
+      },
       theme: ThemeData(
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/sample_data.dart';
 
 /// Optional input card allowing users to supply a previous briefing note.
-/// Enables Gemini 3.8 Flash to compute progress diffing (improved, worsened, or unchanged).
+/// Enables Gemini 2.5 Flash to compute progress diffing (improved, worsened, or unchanged).
+/// Fully accessible with semantics labels and responsive action buttons.
 class DiffInputCard extends StatefulWidget {
   final TextEditingController controller;
   final VoidCallback onDataChanged;
@@ -53,6 +54,7 @@ class _DiffInputCardState extends State<DiffInputCard> {
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
+          key: Key('diff_tile_$hasContent'),
           initiallyExpanded: _isExpanded || hasContent,
           onExpansionChanged: (val) => setState(() => _isExpanded = val),
           leading: Container(
@@ -69,28 +71,35 @@ class _DiffInputCardState extends State<DiffInputCard> {
           ),
           title: Row(
             children: [
-              const Expanded(
-                child: Text(
-                  '3. Progress Comparison (Diff)',
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 14.5,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: -0.2,
+              Expanded(
+                child: Semantics(
+                  header: true,
+                  label: 'Section 3: Progress Comparison Diff against previous briefing',
+                  child: const Text(
+                    '3. Progress Comparison (Diff)',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 14.5,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: -0.2,
+                    ),
                   ),
                 ),
               ),
               if (hasContent) ...[
                 const SizedBox(width: 6),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1565C0),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: const Text(
-                    'Diff Active',
-                    style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                Semantics(
+                  label: 'Diff baseline is active',
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1565C0),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      'Diff Active',
+                      style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ],
@@ -108,26 +117,30 @@ class _DiffInputCardState extends State<DiffInputCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextField(
-                    controller: widget.controller,
-                    maxLines: 5,
-                    minLines: 3,
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontSize: 12,
-                      height: 1.35,
-                    ),
-                    decoration: InputDecoration(
-                      hintText:
-                          'Paste summary of previous briefing note here...\nExample: "Sector 4 PM2.5 was 185 ug/m3, 2 water tankers deployed..."',
-                      filled: true,
-                      fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
+                  Semantics(
+                    textField: true,
+                    label: 'Previous briefing note text field for diffing',
+                    child: TextField(
+                      controller: widget.controller,
+                      maxLines: 5,
+                      minLines: 3,
+                      style: const TextStyle(
+                        fontFamily: 'monospace',
+                        fontSize: 12,
+                        height: 1.35,
                       ),
-                      contentPadding: const EdgeInsets.all(12),
+                      decoration: InputDecoration(
+                        hintText:
+                            'Paste summary of previous briefing note here...\nExample: "Sector 4 PM2.5 was 185 ug/m3, 2 water tankers deployed..."',
+                        filled: true,
+                        fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.2),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        contentPadding: const EdgeInsets.all(12),
+                      ),
+                      onChanged: (_) => widget.onDataChanged(),
                     ),
-                    onChanged: (_) => widget.onDataChanged(),
                   ),
                   const SizedBox(height: 8),
                   Wrap(
@@ -135,25 +148,39 @@ class _DiffInputCardState extends State<DiffInputCard> {
                     runSpacing: 6,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      OutlinedButton.icon(
-                        icon: const Icon(Icons.history_edu_rounded, size: 16),
-                        label: const Text('Load Sample Previous Brief'),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: const Color(0xFF6A1B9A),
-                          side: const BorderSide(color: Color(0xFF6A1B9A)),
-                          visualDensity: VisualDensity.compact,
+                      Semantics(
+                        button: true,
+                        label: 'Load sample previous briefing note',
+                        child: Tooltip(
+                          message: 'Populate with realistic previous brief from 48 hours ago',
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.history_edu_rounded, size: 16),
+                            label: const Text('Load Sample Previous Brief'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF6A1B9A),
+                              side: const BorderSide(color: Color(0xFF6A1B9A)),
+                              visualDensity: VisualDensity.compact,
+                            ),
+                            onPressed: _loadSamplePreviousBrief,
+                          ),
                         ),
-                        onPressed: _loadSamplePreviousBrief,
                       ),
                       if (hasContent)
-                        TextButton.icon(
-                          icon: const Icon(Icons.clear, size: 16),
-                          label: const Text('Clear Diff'),
-                          style: TextButton.styleFrom(
-                            foregroundColor: Colors.grey.shade700,
-                            visualDensity: VisualDensity.compact,
+                        Semantics(
+                          button: true,
+                          label: 'Clear previous briefing baseline',
+                          child: Tooltip(
+                            message: 'Remove previous brief baseline',
+                            child: TextButton.icon(
+                              icon: const Icon(Icons.clear, size: 16),
+                              label: const Text('Clear Diff'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: Colors.grey.shade700,
+                                visualDensity: VisualDensity.compact,
+                              ),
+                              onPressed: _clearPreviousBrief,
+                            ),
                           ),
-                          onPressed: _clearPreviousBrief,
                         ),
                     ],
                   ),
